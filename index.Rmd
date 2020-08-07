@@ -1,0 +1,75 @@
+---
+output: 
+  html_document:
+    css: "styles.css"
+runtime: shiny
+---
+# What's my COVID Risk?
+> Using estimated active cases by geographical location to measure and compare risk. <br>Author: Ryan Knitter
+
+```{r, echo=FALSE, warning=FALSE, message=FALSE}
+require(dplyr)
+require(plotly)
+#require(lubridate)
+source('county_comparison.R')
+source('county_map.R')
+df <- read.csv('data/COVID_data.csv')
+df$rpt_dt <- as.Date(df$rpt_dt)
+```
+
+Throughout the COVID19 pandemic, one of the most common charts I have seen is the below line graph showing cumulative confirmed cases. Though this may be a great chart to use as clickbait for your unqualified blog post about coronavirus remedies, it is not at all helpful when trying to determine your current risk of getting sick. In fact, if you were to rely only on this chart, it might cause you to max out your credit card, and buy enough toilet paper to get through the next five years.
+
+### Cumulative Confirmed COVID19 Cases
+```{R, fig.height=3, fig.width=4, echo=FALSE, warning=FALSE, message=FALSE}
+fig <- df %>%
+  filter(!forecast) %>%
+  group_by(rpt_dt) %>%
+  summarise(cum_confirmed = sum(cum_confirmed)) %>%
+  plot_ly(x = ~rpt_dt, y = ~cum_confirmed) %>%
+  add_lines(color = I('#00f3b3')) %>%
+  layout(xaxis = list(title='Report Date'),
+         yaxis = list(title='Total Confirmed Cases'))
+
+fig
+```
+
+A better metric might be active cases per 100,000 people broken down by geographic location. Unfortunately, the actual number of active cases is never known – some people are asymptomatic, some are pre-symptomatic, and others are still waiting for lab results. However, if we make some reasonable assumptions, we can estimate the number of active cases and come to a metric that is much more useful than cumulative confirmed cases.
+
+Here are the four assumptions we will make for this metric along with links to support the assumptions:
+
+* Individuals are typically [contagious](https://www.cdc.gov/coronavirus/2019-ncov/if-you-are-sick/end-home-isolation.html) for 10 days
+* Individuals typically do not show [symptoms](https://www.acpjournals.org/doi/10.7326/M20-0504) for 5 days
+* Individuals typically get [test results](https://mn.gov/covid19/for-minnesotans/if-sick/get-results/index.jsp) in 3 days
+* 40% of individuals are [asymtomatic](https://www.cdc.gov/coronavirus/2019-ncov/hcp/planning-scenarios.html)
+
+For those weird people who like math equations, more information is provided below. The following animated chart shows the history of the COVID19 spread using our estimated active cases metric. The bubbles are set proportional to population size of each county and the saturation of the color is set based on the number of estimated active cases.
+
+### History of Active Cases in the US
+<br>
+```{R, echo=FALSE}
+county_map(df)
+```
+
+The tool below uses our estimated active cases metric and allows you to compare your county to other counties. You can also adjust assumptions if you think some are too conservative or liberal.
+
+### COVID19 County Comparison Tool
+<br>
+```{r, echo=FALSE}
+county_compare(df)
+```
+
+### Estimated Active Cases
+
+$EstimatedActive Cases = (\frac{C_{(t+p+r)} - C_{(t-c)}}{P*100,000})/(1-a)$
+
+Where $C_t$ equals the Cumulative Cases on day $t$, $p$ equals the days to symptoms, $r$ equals days to test results, $c$ equals days an individual is contagious after test results, $P$ equals the population, and $a$ equals the percent of unreported cases that are asymptomatic.
+
+Estimating active cases for the current date requires cummulative confirmed cases to be forecasted. To accomplish this, I used the `ets()` function from the `fpp2` package to automatically generate a 20-day forecast for each county.
+
+This metric is certainly not perfect, but it is a useful metric that takes steps in the right direction. Future iterations of this metric might consider accounting for differences in testing rates. Making comparisons between two counties with very different testing rates is somewhat misleading when using our proposed metric.
+
+### Other Resources
+
+* COVID19 data was obtained from [COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University](https://github.com/CSSEGISandData/COVID-19)
+* 2019 Population estimates were obtained from the [Census Bureau](https://www2.census.gov/programs-surveys/popest/datasets/2010-2019/counties/totals/)
+* Code for this interactive Shiny document can be found in [my github repository](https://github.com/RyanKnitter/COVID-Shiny-Report)
