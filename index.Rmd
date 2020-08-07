@@ -1,10 +1,10 @@
 ---
+title: "What's my COVID-19 Risk?"
 output: 
   html_document:
     css: "styles.css"
 runtime: shiny
 ---
-# What's my COVID Risk?
 > Using estimated active cases by geographical location to measure and compare risk. <br>Author: Ryan Knitter
 
 ```{r, echo=FALSE, warning=FALSE, message=FALSE}
@@ -17,9 +17,9 @@ df <- read.csv('data/COVID_data.csv')
 df$rpt_dt <- as.Date(df$rpt_dt)
 ```
 
-Throughout the COVID19 pandemic, one of the most common charts I have seen is the below line graph showing cumulative confirmed cases. Though this may be a great chart to use as clickbait for your unqualified blog post about coronavirus remedies, it is not at all helpful when trying to determine your current risk of getting sick. In fact, if you were to rely only on this chart, it might cause you to max out your credit card, and buy enough toilet paper to get through the next five years.
+Throughout the COVID-19 pandemic, one of the most common charts I have seen is the below line graph showing cumulative confirmed cases. Though this may be a great chart to use as clickbait for your unqualified blog post about coronavirus remedies, it is not at all helpful when trying to determine your current risk of getting sick. In fact, if you were to rely only on this chart, it might cause you to max out your credit card, and buy enough toilet paper to get through the next five years.
 
-### Cumulative Confirmed COVID19 Cases
+### Cumulative Confirmed COVID-19 Cases
 ```{R, fig.height=3, fig.width=4, echo=FALSE, warning=FALSE, message=FALSE}
 fig <- df %>%
   filter(!forecast) %>%
@@ -42,7 +42,7 @@ Here are the four assumptions we will make for this metric along with links to s
 * Individuals typically get [test results](https://mn.gov/covid19/for-minnesotans/if-sick/get-results/index.jsp) in 3 days
 * 40% of individuals are [asymtomatic](https://www.cdc.gov/coronavirus/2019-ncov/hcp/planning-scenarios.html)
 
-For those weird people who like math equations, more information is provided below. The following animated chart shows the history of the COVID19 spread using our estimated active cases metric. The bubbles are set proportional to population size of each county and the saturation of the color is set based on the number of estimated active cases.
+For those weird people who like math equations, more information is provided below. The following animated chart shows the history of the COVID-19 spread using our estimated active cases metric. The bubbles are set proportional to population size of each county, and the color saturation is set based on the number of estimated active cases.
 
 ### History of Active Cases in the US
 <br>
@@ -52,7 +52,7 @@ county_map(df)
 
 The tool below uses our estimated active cases metric and allows you to compare your county to other counties. You can also adjust assumptions if you think some are too conservative or liberal.
 
-### COVID19 County Comparison Tool
+### COVID-19 County Comparison Tool
 <br>
 ```{r, echo=FALSE}
 county_compare(df)
@@ -70,6 +70,6 @@ This metric is certainly not perfect, but it is a useful metric that takes steps
 
 ### Other Resources
 
-* COVID19 data was obtained from [COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University](https://github.com/CSSEGISandData/COVID-19)
+* COVID-19 data was obtained from [COVID-19 Data Repository by the Center for Systems Science and Engineering (CSSE) at Johns Hopkins University](https://github.com/CSSEGISandData/COVID-19)
 * 2019 Population estimates were obtained from the [Census Bureau](https://www2.census.gov/programs-surveys/popest/datasets/2010-2019/counties/totals/)
 * Code for this interactive Shiny document can be found in [my github repository](https://github.com/RyanKnitter/COVID-Shiny-Report)

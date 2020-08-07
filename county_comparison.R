@@ -6,7 +6,7 @@ county_compare <- function(df){
   shinyApp(
     ui = fluidPage(includeCSS("styles.css"),
                     # Application title
-                    #titlePanel("COVID19 County Comparison"),
+                    #titlePanel("COVID-19 County Comparison"),
                     
                     # Sidebar with a slider input for number of bins 
                     sidebarLayout(
